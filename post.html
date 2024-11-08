@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Post</title>
+    <link rel="stylesheet" href="style.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="post-title">Loading...</h1>
+            <div id="post-metadata" class="metadata"></div>
+        </header>
+        
+        <main>
+            <article id="post-content">
+                <p>Loading content...</p>
+            </article>
+        </main>
+        
+        <footer>
+            <button onclick="window.location.href='index.html'" class="nt-button">Back to Blog</button>
+        </footer>
+    </div>
+
+    <script>
+        // Function to retrieve URL parameter (e.g., ?p=1)
+        function getPostNumber() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('p');
+        }
+
+        // Function to fetch and display a single post
+        async function loadPost() {
+            const postNumber = getPostNumber();
+            const postFile = `posts/p${postNumber}.txt`;
+
+            try {
+                const response = await fetch(postFile);
+
+                if (!response.ok) {
+                    document.getElementById('post-title').innerText = "Post Not Found";
+                    document.getElementById('post-content').innerText = "The requested post could not be found.";
+                    return;
+                }
+
+                const text = await response.text();
+                const content = text.split('\n');
+
+                // Assign title, metadata, and content
+                const title = content[0];
+                const metadata = content[1];
+                const body = content.slice(2).join('\n');
+
+                // Display the post
+                document.getElementById('post-title').innerText = title;
+                document.getElementById('post-metadata').innerText = metadata;
+                document.getElementById('post-content').innerText = body;
+            } catch (error) {
+                console.error("Error loading post:", error);
+                document.getElementById('post-title').innerText = "Error Loading Post";
+                document.getElementById('post-content').innerText = "An error occurred while loading the post.";
+            }
+        }
+
+        // Load the post when the page is ready
+        loadPost();
+    </script>
+</body>
+</html>
